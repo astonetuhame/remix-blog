@@ -66,3 +66,15 @@ function Layout ({children})
     </>
   )
 }
+
+//specify error messages
+export function ErrorBoundary({error}){
+  return (
+    <Document>
+      <Layout>
+        <h1>Error</h1>
+        <p>{error.message}</p>
+      </Layout>
+    </Document>
+  )
+}
