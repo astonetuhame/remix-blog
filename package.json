@@ -3,6 +3,10 @@
   "name": "remix-app-template-js",
   "description": "",
   "license": "",
+  "prisma":{
+      "seed": "node prisma/seed"
+  },
+
   "scripts": {
     "build": "remix build",
     "dev": "remix dev",
