@@ -1,6 +1,7 @@
 import { Link, redirect } from "remix"
+import {db} from '~/utils/db.server'
 
-export const action = ({request}) => {
+export const action = async ({request}) => {
 
     const form = await request.formData()
 
@@ -10,10 +11,11 @@ export const action = ({request}) => {
     const fields = {title, body}
 
     //submit to database
+    const post = await db.post.create({data:fields})
 
 
 
-    return redirect('/posts')
+    return redirect(`/posts/${post.id}`)
 }
 
 
@@ -37,7 +39,7 @@ function NewPost() {
                     <div className="form-control">
                         <label htmlFor="body">Post Body</label>
                         <textarea name="body" id="body" />
-                        <button className="btn btn-block" type="submit"></button>
+                        <button className="btn btn-block" type="submit">Post</button>
                     </div>
                 </form>
             </div>
