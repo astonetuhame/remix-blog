@@ -1,77 +1,92 @@
-import {Outlet, LiveReload, Link, Links, Meta} from 'remix'
-import globalStylesUrl from '~/styles/global.css'
+import { Outlet, LiveReload, Link, Links, Meta, useLoaderData } from "remix";
+import globalStylesUrl from "~/styles/global.css";
+import { getUser } from "~/utils/session.server";
 
-
-export const links = () => [{rel:'stylesheet', href:globalStylesUrl}]
+export const links = () => [{ rel: "stylesheet", href: globalStylesUrl }];
 export const meta = () => {
-  const description = "A cool blog built with Remix"
-  const keywords = 'remix. react, javascript'
+  const description = "A cool blog built with Remix";
+  const keywords = "remix. react, javascript";
 
   return {
     description,
-    keywords 
-  }
-} 
+    keywords,
+  };
+};
+
+export const loader = async ({ request }) => {
+  const user = await getUser(request);
+  const data = {
+    user,
+  };
+  return data;
+};
 
 export default function App() {
   return (
-  
-  <Document>
-    <Layout>
-    <Outlet />
-    </Layout>
-  </Document>
-
-  )
+    <Document>
+      <Layout>
+        <Outlet />
+      </Layout>
+    </Document>
+  );
 }
 
-function Document ({children, title}){
+function Document({ children, title }) {
   return (
     <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-      <meta name="viewport" content="width=\, initial-scale=1.0" />
-      <Meta />
-      <Links />
-      <title>Document</title>
-    </head>
-    <body>
-      { children }
-      {process.env.NODE_ENV === 'development' ?
-<LiveReload /> : null}
-    </body>
+      <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=\, initial-scale=1.0" />
+        <Meta />
+        <Links />
+        <title>Document</title>
+      </head>
+      <body>
+        {children}
+        {process.env.NODE_ENV === "development" ? <LiveReload /> : null}
+      </body>
     </html>
-  )
+  );
 }
 
+function Layout({ children }) {
+  const { user } = useLoaderData();
 
-function Layout ({children})
-{
   return (
     <>
-    <nav className="navbar">
-      <Link to="/" className='logo'>Remix</Link>
+      <nav className="navbar">
+        <Link to="/" className="logo">
+          Remix
+        </Link>
 
-      <ul className='nav'>
-        <li>
-        <Link to='/posts'>Posts</Link>
-        </li>
-        <li>
-        <Link to='/auth/login'>Login</Link>
-        </li>
-      </ul>
-    </nav>
+        <ul className="nav">
+          <li>
+            <Link to="/posts">Posts</Link>
+          </li>
+          {user ? (
+            <li>
+              <form action="/auth/logout" method="POST">
+                <button className="btn" type="submit">
+                  Logout {user.username}
+                </button>
+              </form>
+            </li>
+          ) : (
+            <li>
+              <Link to="/auth/login">Login</Link>
+            </li>
+          )}
+        </ul>
+      </nav>
 
-    <div className='container'>
-       {children}
-    </div>
+      <div className="container">{children}</div>
     </>
-  )
+  );
 }
 
 //specify error messages
-export function ErrorBoundary({error}){
+export function ErrorBoundary({ error }) {
   return (
     <Document>
       <Layout>
@@ -79,5 +94,5 @@ export function ErrorBoundary({error}){
         <p>{error.message}</p>
       </Layout>
     </Document>
-  )
+  );
 }
